@@ -1,0 +1,223 @@
+<style>
+.zk-wrap{
+	width:1000px;
+	margin:50px auto;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:13px;	
+}
+.zk-row{
+	width:100%;
+	margin:20px 0px;	
+}
+.zk-width50{
+	box-sizing:border-box;
+	padding:5px;
+	width:50%;
+	float:left;	
+}
+.zk-wrap select, .zk-wrap input, .zk-wrap textarea{
+	min-width:250px;
+	padding:8px 5px;	
+	display:block;
+	text-align:left;
+}
+.zk-row input[type="checkbox"]{
+	width:20px;
+	height:20px;
+	min-width:20px;
+}
+.zk-wrap select:after, .zk-wrap input:after{
+	clear:both;
+}
+.zk-clear{
+	clear:both;	
+}
+#pickup-map, #dropoff-map{
+	height: 200px;
+	width:100%;
+	box-sizing:border-box;
+	border:2px solid #ccc;
+}
+.zk-wrap label{
+    width: 45%;
+    float: left;
+    vertical-align: middle;	
+	line-height:38px;
+}
+.s20{
+	font-size:20px;	
+}
+.zk-row{
+	position:relative;	
+}
+.zk-row input[type="number"]:before{
+	content: 'JD';
+    position: absolute;
+    top: 0;
+    left: 40px;
+    z-index: 1;
+}
+.zk-title{
+	font-size:30px;	
+}
+.zk-wrap button{
+	padding:8px;
+	text-align:center;
+	width:300px;
+	margin:8px auto;
+	background:	#E00B19;
+	color:#fff;
+	font-size:14px;
+	text-transform:uppercase;
+	border:2px solid #E00B19;
+	border-radius:5px;
+	cursor:pointer;
+}
+.zk-wrap button:hover{
+	color:	#E00B19;
+	background:#fff;
+}
+.zk-wrap .inst{
+	margin-left:45%;
+	font-size:11px;
+	margin-top:7px;
+	color:#333;
+}
+</style>
+
+<div class="zk-wrap">
+	<div class="zk-title">Create A Delivery</div>
+	<form method="post" id="order-form">
+		<input type="hidden" name="scope" id="scope" value="newTicket">
+		<input type="hidden" name="order_source" id="order_source" value="kliklocal">
+		<input type="hidden" name="trans_type" id="trans_type" value="delivery">
+		<input type="hidden" name="product_pickup_lat" id="product_pickup_lat">
+		<input type="hidden" name="product_pickup_lng" id="product_pickup_lng">
+		<input type="hidden" name="ticket_lat" id="ticket_lat">
+		<input type="hidden" name="ticket_lng" id="ticket_lng">
+		<div class="zk-row">
+			<div class="zk-width50">
+				<div class="zk-row">
+					<label>Transaction Type</label>
+					<select name="trans_type" id="trans_type">
+						<option value="delivery" selected>Delivery</option>
+						<option value="pickup">Pickup</option>
+					</select>
+				</div>
+				
+				<div class="zk-row">
+					<label>Customer Number</label>
+					<input type="text" name="ext_customer_number" id="ext_customer_number" placeholder="Enter your customer number">
+				</div>
+				
+				<div class="zk-row">
+					<label>Description</label>
+					<textarea name="ticket_description" id="ticket_description" placeholder="Add any notes"></textarea>
+				</div>
+				
+				<div class="zk-row">
+					<label>Invoice</label>
+					<input type="text" name="ext_invoice_number" id="ext_invoice_number" placeholder="Amount to pay">
+				</div>
+				<div class="zk-row">
+					<label>Delivery Fee</label>
+					<input type="text" name="delivery_fee" id="delivery_fee" placeholder="Enter delivery fee">
+				</div>
+				<div class="zk-row">
+					<label>Total</label>
+					<input type="text" name="total" id="total" placeholder="Total Amount Owed">
+				</div>
+			</div>
+			<div class="zk-width50">
+            	<div class="zk-row">
+					<label>Customer Name</label>
+					<input type="text" name="customer_name" id="customer_name" placeholder="Enter your name" required>
+				</div>
+                <div class="zk-row">
+					<label>Customer Email</label>
+					<input type="text" name="email_address" id="email_address" placeholder="Enter your email address">
+				</div>
+                <div class="zk-row">
+					<label>Customer Phone</label>
+					<input type="text" name="contact_number" id="contact_number" placeholder="Enter your phone number">
+				</div>
+                <div class="zk-row">
+                <hr>
+                </div>
+                <div class="zk-row">
+					<label>Product Pickup Contact Number</label>
+					<input type="text" class="mobile_inputs" name="product_pickup_contact_number" id="product_pickup_contact_number" placeholder="Add pickup phone number">
+					<div class="inst">* Enter numbers with no spaces!</div>
+				</div>
+				<div class="zk-row">
+					<label>Product Pickup Address</label>
+					<input type="text" name="product_pickup_address" id="product_pickup_address" placeholder="Address to where the product is">
+				</div>
+				<div class="zk-row">
+					<label>Delivery Address</label>
+					<input type="text" name="delivery_address" id="delivery_address" placeholder="The destination address">
+				</div>
+				<div class="zk-row" id="submit-results">
+					<button  name="submit" id="submit">Create</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script>
+  function empty(data){
+	if (typeof data === "undefined" || data==null || data=="" ) { 
+		return true;
+	}
+	return false;
+  }
+
+  function reloadPage(){
+	 location.reload(true);
+   }
+	   
+  $(document).ready(function(){
+
+	   $('.mobile_inputs').on('keyup', function(){
+			var phone_number = $(this).val();
+			var phone_stripped = phone_number.replace(/[- )(]/g,'');
+			$(this).val(phone_stripped);
+		});	
+	   
+	   function clearForm(){
+		  $('#order-form input[type=text]').val(''); 
+		  $('#order-form textarea').val('');
+	   }
+
+	   
+	  $('#order-form').on('submit', function(){
+		 var data=$(this).serialize();
+		 console.log(data);
+		 $('#submit').hide();
+		 $('#submit-results').html('<div>Sending form data...</div>');
+		 $.ajax({
+			url:'send-order-to-zippykind.php',
+			data: data,
+			type: 'post',                  		
+			dataType: 'json',
+			timeout: 6000,
+			success: function (response) {
+				console.log(JSON.stringify(response));
+				clearForm();
+				$('#submit').hide();
+				$('#submit-results').html('<div>Successfully Sent! <a href="#" onclick="reloadPage()">Click here</a> to submit another order!</div>');
+			},
+			error: function () {
+				console.log(JSON.stringify(response));
+				clearForm();
+				$('#submit').show();
+				$('#submit-results').html('<div style="color:red">Successfully Sent!</div>');
+			},
+		});
+		return false; 
+	  });
+   });
+</script>
